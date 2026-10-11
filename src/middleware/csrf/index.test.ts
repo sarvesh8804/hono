@@ -34,6 +34,7 @@ describe('CSRF by Middleware', () => {
     app.use('*', csrf())
     app.get('/form', (c) => c.html('<form></form>'))
     app.options('/form', (c) => c.text('OK'))
+    app.on('QUERY', '/form', (c) => c.text('OK'))
     app.post('/form', simplePostHandler)
     app.put('/form', (c) => c.text('OK'))
     app.delete('/form', (c) => c.text('OK'))
@@ -59,6 +60,15 @@ describe('CSRF by Middleware', () => {
     describe('OPTIONS /form', async () => {
       it('should be 200 for any request', async () => {
         const res = await app.request('http://localhost/form', { method: 'OPTIONS' })
+
+        expect(res.status).toBe(200)
+        expect(await res.text()).toBe('OK')
+      })
+    })
+
+    describe('QUERY /form', async () => {
+      it('should be 200 for any request', async () => {
+        const res = await app.request('http://localhost/form', { method: 'QUERY' })
 
         expect(res.status).toBe(200)
         expect(await res.text()).toBe('OK')
